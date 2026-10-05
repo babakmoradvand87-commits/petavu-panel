@@ -18,6 +18,12 @@ async function render() {
   if (path === "/signup") return viewAuth("signup");
   if (path === "/login" || !user) return viewAuth("login");
   const me = await petavuData.profile.me();
+  const must = !!(me?.must_change_password || user.user_metadata?.must_change_password);
+  if (must && path !== "/password") {
+    location.hash = "#/password";
+    return viewPassword(user, me);
+  }
+  if (path === "/password") return viewPassword(user, me);
   const { data: mine } = await petavuData.businesses.mine(user.id);
   const list = mine || [];
   if (path === "/biz") return viewBiz(user, me, list);
@@ -58,6 +64,44 @@ function viewAuth(mode) {
     qs("#m").textContent = error ? error.message : mode === "signup" ? "حساب ساخته شد. وارد شوید." : "وارد شدید.";
     if (!error && mode === "login") location.hash = "#/home";
     if (!error && mode === "signup") location.hash = "#/login";
+  };
+}
+
+function viewPassword(user, me) {
+  petavuChrome({
+    items: [{ id: "out", href: "#/logout", label: "خروج", out: true }],
+    active: "out",
+    still: "assets/still-account.jpg",
+    kicker: "امنیت حساب",
+    title: "رمز پیش‌فرض را عوض کنید",
+    lead: "اولین ورود است. بدون تغییر رمز، میز کار باز نمی‌شود.",
+    body: `<form class="stack" id="pw">
+      <input name="a" type="password" required minlength="8" placeholder="رمز جدید">
+      <input name="b" type="password" required minlength="8" placeholder="تکرار رمز جدید">
+      <button class="btn" type="submit">ذخیره و ادامه</button>
+      <p id="m" class="muted"></p>
+    </form>`,
+  });
+  qs("#pw").onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const a = String(fd.get("a"));
+    const b = String(fd.get("b"));
+    if (a !== b) {
+      qs("#m").className = "err";
+      qs("#m").textContent = "دو رمز یکی نیست.";
+      return;
+    }
+    const { error } = await petavuData.auth.updatePassword(a);
+    if (error) {
+      qs("#m").className = "err";
+      qs("#m").textContent = error.message;
+      return;
+    }
+    await petavuData.auth.setMeta({ must_change_password: false });
+    if (me?.id) await petavuData.profile.update(me.id, { must_change_password: false });
+    location.hash = "#/home";
+    render();
   };
 }
 
