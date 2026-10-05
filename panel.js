@@ -18,17 +18,28 @@ async function render() {
 }
 
 function viewAuth(mode) {
-  petavuShell(
-    mode === "signup" ? "عضویت در شبکه" : "ورود به فضای کار",
-    nav(null),
-    `<p class="muted">نسخهٔ ۱: ساخت حساب و ثبت کسب‌وکار. تیم، پیام و بازرگانی کامل در نسخه‌های بعد.</p>
-     <form id="f">
-       <input name="email" type="email" required placeholder="ایمیل" dir="ltr">
-       <input name="password" type="password" required minlength="6" placeholder="رمز">
-       <button class="btn" type="submit">${mode === "signup" ? "ساخت حساب" : "ورود"}</button>
+  const signup = mode === "signup";
+  petavuGate({
+    image: "assets/login.jpg",
+    kicker: signup ? "عضویت در شبکه" : "فضای کار عضو",
+    title: signup ? "حساب حرفه‌ای بسازید" : "ورود به میز کار",
+    lead: signup
+      ? "برای پت‌شاپ، کلینیک، اصطبل، دامپزشکی، تولید و تأمین. معرفی عمومی پس از تأیید منتشر می‌شود."
+      : "اینجا فضای کار عضو است — جدا از ادارهٔ شبکه. با حساب خود وارد شوید.",
+    captionTitle: "سامانهٔ اعضای پتاوو",
+    caption: "سگ، گربه و اسب در یک صنعت. میز کار شما برای معرفی کسب‌وکار و حضور در شبکه.",
+    form: `<form id="f">
+       <label>ایمیل</label>
+       <input name="email" type="email" required placeholder="you@example.com" dir="ltr" autocomplete="username">
+       <label>رمز عبور</label>
+       <input name="password" type="password" required minlength="6" placeholder="رمز عبور" autocomplete="${signup ? "new-password" : "current-password"}">
+       <button class="btn" type="submit">${signup ? "ساخت حساب" : "ورود به شبکه"}</button>
        <p id="m" class="muted"></p>
-     </form>`
-  );
+     </form>`,
+    extra: signup
+      ? `<p class="gate-extra">حساب دارید؟ <a href="#/login">ورود به میز کار</a></p>`
+      : `<p class="gate-extra">عضو نیستید؟ <a href="#/signup">عضویت در پتاوو</a> · <a href="${O.website}">بازگشت به سایت</a></p>`,
+  });
   qs("#f").onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
