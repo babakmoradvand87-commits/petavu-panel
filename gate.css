@@ -16,8 +16,8 @@ body.is-gate .top,body.is-gate .footer{display:none}
 }
 .gate input:focus{outline:2px solid #c9a45a;outline-offset:1px}
 .gate .btn{
-  min-height:48px;border:1px solid rgba(196,132,74,.55);border-radius:12px;
-  background:linear-gradient(165deg,rgba(196,132,74,.42),rgba(22,14,6,.9));color:#f4efe6;
+  min-height:48px;border:1px solid rgba(201,164,90,.72);border-radius:999px;
+  background:linear-gradient(180deg,rgba(196,132,74,.62),rgba(90,48,14,.94));color:#f4efe6;
   font-weight:800;cursor:pointer;margin-top:6px;
 }
 .gate .btn:disabled{opacity:.6}
