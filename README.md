@@ -1,3 +1,4 @@
-# پنل اعضا
+# PETAVU static + Supabase
 
-Coming-soon for `panel.petavu.ir`.
+فرانت استاتیک GitHub Pages. احراز هویت و داده روی پروژهٔ Supabase.
+کلید anon عمومی است؛ service_role در این مخزن نیست.
