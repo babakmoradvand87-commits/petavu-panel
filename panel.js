@@ -1,11 +1,14 @@
 const O = PETAVU_ENV.origins;
-const nav = (user) =>
-  user
-    ? `<a href="#/app">میز کار</a><a href="#/logout">خروج</a><a href="${O.website}">سایت</a>`
-    : `<a href="#/login">ورود</a><a href="#/signup">عضویت</a><a href="${O.website}">سایت</a>`;
+const items = [
+  { id: "home", href: "#/home", label: "خانه" },
+  { id: "biz", href: "#/biz", label: "کسب‌وکار من" },
+  { id: "status", href: "#/status", label: "وضعیت انتشار" },
+  { id: "account", href: "#/account", label: "حساب" },
+  { id: "out", href: "#/logout", label: "خروج", out: true },
+];
 
 async function render() {
-  const path = (location.hash.replace("#", "") || "/login");
+  const path = location.hash.replace("#", "") || "/login";
   if (path === "/logout") {
     await petavuData.auth.signOut();
     location.hash = "#/login";
@@ -14,7 +17,13 @@ async function render() {
   const user = await petavuData.auth.user();
   if (path === "/signup") return viewAuth("signup");
   if (path === "/login" || !user) return viewAuth("login");
-  return viewApp(user);
+  const me = await petavuData.profile.me();
+  const { data: mine } = await petavuData.businesses.mine(user.id);
+  const list = mine || [];
+  if (path === "/biz") return viewBiz(user, me, list);
+  if (path === "/status") return viewStatus(list);
+  if (path === "/account") return viewAccount(user, me);
+  return viewHome(user, me, list);
 }
 
 function viewAuth(mode) {
@@ -47,22 +56,31 @@ function viewAuth(mode) {
     const { error } = await fn(String(fd.get("email")), String(fd.get("password")));
     qs("#m").className = error ? "err" : "ok";
     qs("#m").textContent = error ? error.message : mode === "signup" ? "حساب ساخته شد. وارد شوید." : "وارد شدید.";
-    if (!error && mode === "login") location.hash = "#/app";
+    if (!error && mode === "login") location.hash = "#/home";
     if (!error && mode === "signup") location.hash = "#/login";
   };
 }
 
-async function viewApp(user) {
-  const me = await petavuData.profile.me();
-  const { data: mine } = await petavuData.businesses.mine(user.id);
-  const cards = (mine || [])
-    .map((b) => `<article class="card"><h3>${b.name}</h3><p class="muted">${b.published ? "منتشرشده" : "در انتظار انتشار"} · ${b.slug}</p></article>`)
-    .join("") || `<p class="muted">هنوز کسب‌وکاری ثبت نکرده‌اید.</p>`;
-  petavuShell(
-    "میز کار",
-    nav(user),
-    `<p class="muted">${me?.display_name || user.email}</p>
-     <form id="biz">
+function viewHome(user, me, list) {
+  const cards = list.length
+    ? list.map((b) => `<article class="card"><h3>${b.name}</h3><p class="muted">${b.published ? "منتشرشده" : "در انتظار انتشار"} · ${b.kind} · ${b.city || ""}</p></article>`).join("")
+    : `<p class="muted">هنوز کسب‌وکاری ثبت نکرده‌اید. از «کسب‌وکار من» شروع کنید.</p>`;
+  petavuChrome({
+    items, active: "home", still: "assets/still-home.jpg",
+    kicker: "پنل اعضا",
+    title: "میز کار شما",
+    lead: "پت‌شاپ، کلینیک، اصطبل، دامپزشک و تأمین اینجا به هم می‌رسند.",
+    body: `<p class="muted">${me?.display_name || user.email}</p><div class="grid">${cards}</div>`,
+  });
+}
+
+function viewBiz(user, me, list) {
+  petavuChrome({
+    items, active: "biz", still: "assets/still-biz.jpg",
+    kicker: "کسب‌وکار من",
+    title: "معرفی در شبکه",
+    lead: "نام، صنف و شهر را ثبت کنید. دیده شدن عمومی پس از تأیید است.",
+    body: `<form class="stack" id="biz">
        <input name="name" required placeholder="نام کسب‌وکار">
        <input name="slug" required placeholder="نامک لاتین" dir="ltr">
        <select name="kind">
@@ -77,8 +95,8 @@ async function viewApp(user) {
        <button class="btn">ثبت برای بررسی</button>
        <p id="m" class="muted"></p>
      </form>
-     <div class="grid">${cards}</div>`
-  );
+     <div class="grid" style="margin-top:28px">${list.map((b) => `<article class="card"><h3>${b.name}</h3><p class="muted">${b.published ? "منتشرشده" : "در انتظار"} · ${b.slug}</p></article>`).join("")}</div>`,
+  });
   qs("#biz").onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
@@ -95,6 +113,34 @@ async function viewApp(user) {
     qs("#m").textContent = error ? error.message : "ثبت شد. پس از تأیید مدیر روی سایت می‌آید.";
     if (!error) render();
   };
+}
+
+function viewStatus(list) {
+  const rows = list.length
+    ? list.map((b) => `<article class="card"><h3>${b.name}</h3><p class="muted">${b.published ? "روی سایت دیده می‌شود." : "در صف تأیید است."}</p></article>`).join("")
+    : `<p class="muted">کسب‌وکاری برای نمایش وضعیت نیست.</p>`;
+  petavuChrome({
+    items, active: "status", still: "assets/still-status.jpg",
+    kicker: "وضعیت انتشار",
+    title: "جای شما در ویترین",
+    lead: "انتشار عمومی فقط پس از تأیید شبکه انجام می‌شود.",
+    body: `<div class="grid">${rows}</div>`,
+  });
+}
+
+function viewAccount(user, me) {
+  petavuChrome({
+    items, active: "account", still: "assets/still-account.jpg",
+    kicker: "حساب",
+    title: "ورود شما",
+    lead: "همین حساب برای همهٔ اعضای صنعت است.",
+    body: `<article class="card">
+      <p><b>${me?.display_name || "عضو"}</b></p>
+      <p class="muted" dir="ltr">${user.email}</p>
+      <p class="muted">نقش: ${me?.role === "admin" ? "مدیر" : "عضو"}</p>
+    </article>
+    <p><a class="btn" href="${O.website}">بازگشت به سایت</a></p>`,
+  });
 }
 
 window.addEventListener("hashchange", render);
