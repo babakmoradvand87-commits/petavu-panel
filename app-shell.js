@@ -15,8 +15,8 @@ window.petavuGate = function petavuGate(opts) {
           ${opts.extra || ""}
         </div>
       </aside>
-      <figure class="gate-visual">
-        <img src="${opts.image}" alt="" width="1920" height="1080">
+      <figure class="gate-visual" style="background-image:url('${opts.image}')">
+        <img src="${opts.image}" alt="">
         <figcaption>
           <strong>${opts.captionTitle}</strong>
           <span>${opts.caption}</span>
