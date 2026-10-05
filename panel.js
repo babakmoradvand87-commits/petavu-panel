@@ -21,13 +21,13 @@ function viewAuth(mode) {
   const signup = mode === "signup";
   petavuGate({
     image: "assets/login.jpg",
-    kicker: signup ? "عضویت در شبکه" : "فضای کار عضو",
-    title: signup ? "حساب حرفه‌ای بسازید" : "ورود به میز کار",
+    kicker: signup ? "عضویت در شبکه" : "پنل اعضا",
+    title: signup ? "حساب حرفه‌ای بسازید" : "ورود به پنل اعضا",
     lead: signup
       ? "برای پت‌شاپ، کلینیک، اصطبل، دامپزشکی، تولید و تأمین. معرفی عمومی پس از تأیید منتشر می‌شود."
-      : "اینجا فضای کار عضو است — جدا از ادارهٔ شبکه. با حساب خود وارد شوید.",
+      : "این پنل برای همهٔ اعضای پتاوو است. با حساب خود وارد شوید.",
     captionTitle: "سامانهٔ اعضای پتاوو",
-    caption: "سگ، گربه و اسب در یک صنعت. میز کار شما برای معرفی کسب‌وکار و حضور در شبکه.",
+    caption: "سگ، گربه و اسب در یک صنعت. میز کار همهٔ اعضا برای معرفی کسب‌وکار و حضور در شبکه.",
     form: `<form id="f">
        <label>ایمیل</label>
        <input name="email" type="email" required placeholder="you@example.com" dir="ltr" autocomplete="username">
