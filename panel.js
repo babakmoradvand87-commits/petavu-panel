@@ -72,9 +72,9 @@ function viewPassword(user, me) {
     items: [{ id: "out", href: "#/logout", label: "خروج", out: true }],
     active: "out",
     still: "assets/still-account.jpg",
-    kicker: "امنیت حساب",
-    title: "رمز پیش‌فرض را عوض کنید",
-    lead: "اولین ورود است. بدون تغییر رمز، میز کار باز نمی‌شود.",
+    kicker: "حریم دسترسی",
+    title: "رمز شما، فقط مال شما",
+    lead: "برای ورود به میز کار، رمز اختصاصی خود را بگذارید.",
     body: `<form class="stack" id="pw">
       <input name="a" type="password" required minlength="8" placeholder="رمز جدید">
       <input name="b" type="password" required minlength="8" placeholder="تکرار رمز جدید">
@@ -108,7 +108,7 @@ function viewPassword(user, me) {
 function viewHome(user, me, list) {
   const cards = list.length
     ? list.map((b) => `<article class="card"><h3>${b.name}</h3><p class="muted">${b.published ? "منتشرشده" : "در انتظار انتشار"} · ${b.kind} · ${b.city || ""}</p></article>`).join("")
-    : `<p class="muted">هنوز کسب‌وکاری ثبت نکرده‌اید. از «کسب‌وکار من» شروع کنید.</p>`;
+    : `<p class="muted">جایگاه شما در شبکه هنوز معرفی نشده است.</p>`;
   petavuChrome({
     items, active: "home", still: "assets/still-home.jpg",
     kicker: "پنل اعضا",
@@ -122,8 +122,8 @@ function viewBiz(user, me, list) {
   petavuChrome({
     items, active: "biz", still: "assets/still-biz.jpg",
     kicker: "کسب‌وکار من",
-    title: "معرفی در شبکه",
-    lead: "نام، صنف و شهر را ثبت کنید. دیده شدن عمومی پس از تأیید است.",
+    title: "جایگاه شما در صنف",
+    lead: "نام و شهر واحدتان را بسپارید. دیده شدن عمومی، پس از تأیید شبکه است.",
     body: `<form class="stack" id="biz">
        <input name="name" required placeholder="نام کسب‌وکار">
        <input name="slug" required placeholder="نامک لاتین" dir="ltr">
@@ -154,7 +154,7 @@ function viewBiz(user, me, list) {
       published: false,
     });
     qs("#m").className = error ? "err" : "ok";
-    qs("#m").textContent = error ? error.message : "ثبت شد. پس از تأیید مدیر روی سایت می‌آید.";
+    qs("#m").textContent = error ? error.message : "درخواست شما به ادارهٔ شبکه رسید.";
     if (!error) render();
   };
 }
@@ -162,12 +162,12 @@ function viewBiz(user, me, list) {
 function viewStatus(list) {
   const rows = list.length
     ? list.map((b) => `<article class="card"><h3>${b.name}</h3><p class="muted">${b.published ? "روی سایت دیده می‌شود." : "در صف تأیید است."}</p></article>`).join("")
-    : `<p class="muted">کسب‌وکاری برای نمایش وضعیت نیست.</p>`;
+    : `<p class="muted">هنوز پرونده‌ای برای ویترین نیست.</p>`;
   petavuChrome({
     items, active: "status", still: "assets/still-status.jpg",
-    kicker: "وضعیت انتشار",
-    title: "جای شما در ویترین",
-    lead: "انتشار عمومی فقط پس از تأیید شبکه انجام می‌شود.",
+    kicker: "ویترین",
+    title: "آیا صنعت شما را می‌بیند",
+    lead: "اعتبار عمومی، پس از تأیید ادارهٔ شبکه است.",
     body: `<div class="grid">${rows}</div>`,
   });
 }
@@ -176,8 +176,8 @@ function viewAccount(user, me) {
   petavuChrome({
     items, active: "account", still: "assets/still-account.jpg",
     kicker: "حساب",
-    title: "ورود شما",
-    lead: "همین حساب برای همهٔ اعضای صنعت است.",
+    title: "هویت شما در پتاوو",
+    lead: "یک ورود، برای تمام مسیرهای صنعت پت و اسب.",
     body: `<article class="card">
       <p><b>${me?.display_name || "عضو"}</b></p>
       <p class="muted" dir="ltr">${user.email}</p>
