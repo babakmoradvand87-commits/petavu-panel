@@ -35,7 +35,7 @@ async function render() {
 function viewAuth(mode) {
   const signup = mode === "signup";
   petavuGate({
-    image: "assets/login.jpg",
+    image: "assets/login.jpg?v=p7",
     kicker: signup ? "عضویت در شبکه" : "پنل اعضا",
     title: signup ? "حساب حرفه‌ای بسازید" : "ورود به پنل اعضا",
     lead: signup
